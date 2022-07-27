@@ -1,0 +1,168 @@
+\documentclass[10pt,a4paper]{report}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{color}
+\usepackage{subcaption}
+\usepackage{mathtools}
+\usepackage[export]{adjustbox}
+
+\title{System for Satellite Imagery Processing using SVM}
+\author{Ivan Yakunin}
+\date{July 2022}
+
+\begin{document}
+\maketitle
+\tableofcontents
+\part{SVM Model}
+\chapter{How SVM work}
+\section{General Idea}
+SVM or Support Vector Machine is a linear model for classification and regression problems. It can solve linear and non-linear problems and work well for many practical problems. The idea of SVM is simple: The algorithm creates a line or a hyperplane which separates the data into classes.
+
+At first approximation what SVMs do is to find a separating line(or hyperplane) between data of two classes. SVM is an algorithm that takes the data as an input and outputs a line that separates those classes if possible.
+
+\begin{figure}
+    \centering
+    \begin{subfigure}{0.3\textwidth}
+    \includegraphics[width=1.1\linewidth, height=4cm]{photos/svm2.png}
+    \caption{example 1}
+    \label{fig:sub1}
+    \end{subfigure}
+    \begin{subfigure}{0.3\textwidth}
+    \includegraphics[width=1.1\linewidth, height=4cm]{photos/svm3.png}
+    \caption{example 2}
+    \label{fig:sub2}
+    \end{subfigure}
+    \begin{subfigure}{0.3\textwidth}
+    \includegraphics[width=1.1\linewidth, height=4cm]{photos/svm4.png}
+    \caption{example 3}
+    \label{fig:sub3}
+    \end{subfigure}
+    \caption{3d SVM examples}
+\end{figure}
+\clearpage
+
+\section{Algorithm}
+According to the SVM algorithm we find the points closest to the line from both the classes.These points are called support vectors. Now, we compute the distance between the line and the support vectors. This distance is called the margin. Our goal is to maximize the margin. The hyperplane for which the margin is maximum is the optimal hyperplane.\cite{cherkassky2004practical}
+\begin{center}
+\end{center}
+\includegraphics[width=0.9\linewidth, right]{photos/svm1.png}
+\clearpage
+
+\section{Math for SVM}
+we have l training examples where each example x are of D dimension and each have labels of either y=+1 or y= -1 class, and our examples are linearly separable. Then, our training data is form \\
+\{$ x_i$, $ y_i $ \} where  i = 1 \dots L, $ y_i \in \{-1,1\}, x \in \mathbf{R}^D $ \\
+We consider D=2 to keep explanation simple and data points are linearly separable, The hyperplane w.x+b=0 can be described as : \\
+\begin{figure}[h]
+\includegraphics[width=\textwidth]{photos/svm5.png}
+\caption{}
+\label{fig:figure2}
+\end{figure} \\
+Support vectors examples are closest to optimal hyperplane and the aim of the SVM is to orientate this hyperplane as far as possible from the closest member of the both classes.\cite{chen2001one} \\
+\\
+From the Figure \ref{fig:figure2} SVM problem can be formulated as \\
+\begin{center}
+\begin{math}
+w \cdot x_i + b \geq 1 \qquad for \; y_i = +1 \\
+w \cdot x_i + b \leq 1 \qquad for \; y_i = -1 \\
+combining above equations, it can be written as \\
+y_i \cdot (w \cdot x_i + b) -1 \geq 0 \qquad for \; y_i = \pm 1 \\
+\end{math}
+\end{center}
+\\
+From the Fig \ref{fig:figure2} we have two hyperplane H1 and H2 passing through the support vectors of +1 and -1 class respectively, so 
+
+$ w \cdot x + b = -1 : H1$
+
+$ w \cdot x + b = -1 : H2$ \\
+\\
+And distance between H1 hyperplane and origin is $ 1-b)/|w|$ and distance between H2 hyperplane and origin is $ (1-b)/ w $. So margin can be given as
+
+$ M = \frac{1-b}{|w|} - \frac{-1-b}{|w|}$
+
+$M = \frac{2}{|w|} $\\
+\\
+\clearpage
+Where M is nothing but twice of the margin. So margin can be written as $ 1/|w| $. As, optimal hyperplane maximize the margin, then the SVM objective is boiled down to fact of maximizing the term $1/|w|$,
+\begin{center}
+    $ max \frac{1}{||w||} $ \\
+    which can be written as \\
+    $ min ||w|| $ \\
+    As l2 optimization are often more stable then l1 optimization so again above equation can be written as \\
+    $ min \frac{||w||^2}{2}$ such that $ y_i \cdot (w \cdot x_i + b) - 1 \geq 0 for \; i = 1\dots l$
+    
+\end{center}
+\clearpage
+
+\chapter{Training SVM Model}
+\section{Image preprocessing}
+The idea is to train SVM model to detect boats using features which are provided by HOG\footnote{The histogram of oriented gradients (HOG) is a feature descriptor used in computer vision and image processing for the purpose of object detection. The technique counts occurrences of gradient orientation in localized portions of an image.}. As it strongly dependent on the contrast between pixels we are to find a way to increase it. The solution is to switch from RGB color space to YUV(see \ref{fig:figure3}) and afterwards create 3 images by separating spectrum. \\
+\begin{tabular}{c | c c c}
+    Original photo & Y spectrum & U spectrum & V spectrum \\ \hline
+    \includegraphics[width=0.2\textwidth, height=30mm]{photos/yuv1.jpg} & \includegraphics[width=0.2\textwidth, height=30mm]{photos/yuv2.jpg} & \includegraphics[width=0.2\textwidth, height=30mm]{photos/yuv3.jpg} & \includegraphics[width=0.2\textwidth, height=30mm]{photos/yuv4.jpg} \\
+\end{tabular} \\
+\begin{figure}[h]
+\includegraphics[width=\textwidth]{photos/photo123.png}
+\caption{Switch from RGB to YUV}
+\label{fig:figure3}
+\end{figure}
+\clearpage
+Then these images are processed by HoG algorithm so that features are extracted \\
+\begin{tabular}{| r c | c |}
+	\multicolumn{1}{r}{} &  \multicolumn{1}{c}{YUV} & \multicolumn{1}{c}{HOG} \\ \hline
+	Y spectrum & \includegraphics[width=0.2\textwidth,height=30mm]{photos/yuv2.jpg} & \includegraphics[width=0.2\textwidth, height=30mm]{photos/hog1.jpg} \\ \hline
+	U spectrum & \includegraphics[width=0.2\textwidth,height=30mm]{photos/yuv3.jpg} & \includegraphics[width=0.2\textwidth, height=30mm]{photos/hog2.jpg} \\ \hline
+	V spectrum & \includegraphics[width=0.2\textwidth,height=30mm]{photos/yuv4.jpg} & \includegraphics[width=0.2\textwidth, height=30mm]{photos/hog3.jpg} \\ \hline
+\end{tabular} \\
+\section{Training SVM model}
+The next step it to provide  all the image preprocсessing features to SVM model as a training set. SVM is to correctly set an optimal рyperplain between images which include a ship and which not depending on HOG features as point on a plain. In result, the SVM model which we trained on 3000 image dataset could provide a correct answer in a bit more than 97\% chances.
+\clearpage
+\chapter{Other parts of specification}
+\section{Lists}
+Unordered list
+\begin{itemize}
+    \item one
+    \item two
+    \item three
+\end{itemize} \\
+Ordered list
+\begin{enumerate}
+    \item one
+    \item two
+    \item three
+\end{enumerate}
+Nested list
+\begin{enumerate}
+    \item One
+    \begin{enumerate}
+        \item four
+        \item five
+        \item six
+    \end{enumerate}
+    \item two
+    \item three
+    \end{enumerate}
+\section{Math formulas}
+\begin{align}
+    Y_{ij} = \begin{dcases*}
+        \sum_{k \sim i}y_{ij}, & if $ i = j $,\\
+        {-y_{ij}}, & if $ i \ne j $ and $ i \sim j $,\\
+        0, & otherwise. 
+        \end{dcases*}
+\end{align}
+\begin{align}
+    \begin{split}
+      V &= \iiint \rho^{2} sin{\theta} d\rho d\theta d\varphi \\
+      &= \int_{0}^{2\pi} \int_{0}^{\pi} \int_{0}^{r} \rho^{2} \sin{\theta} d\rho d\theta d\varphi \\
+      &= 2\pi \int_{0}^{\pi} \int_{0}^{r} \rho^{2} \sin{\theta} d\rho d\theta \\
+      &= 4\pi \int_{0}^{r} \rho^{2} d\rho \\
+      &= \frac{4\pi}{3}\rho^{3}
+    \end{split}
+\end{align}
+\begin{math}
+\int{\frac{\sec{x}^4}{8 \cdot \sqrt{7 - 6 \cdot \tan{x} - \tan{x}^2}}\,dx}
+\end{math}
+
+\bibliographystyle{plain}
+\bibliography{bib.bib}
+  
+\end{document} 
