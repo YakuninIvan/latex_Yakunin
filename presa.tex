@@ -1,0 +1,88 @@
+\documentclass{beamer}
+\usepackage[utf8]{inputenc}
+
+\usetheme{Madrid}
+\usecolortheme{default}
+%--------------------------------------
+\usepackage[T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[russian]{babel}
+%--------------------------------------
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor= blue,      
+    urlcolor= blue,
+    pdftitle={Overleaf Example},
+    pdfpagemode=FullScreen,
+    }
+\title[System for Satellite Imagery Processing using SVM]
+{Inroducion to LaTex}
+
+\author[Yakunin]
+{I.~V.~Yakunin\inst{1}}
+
+\institute[HSE]
+{
+    \inst{1}
+    Faculty of Computer Science \\
+    Hse University
+}
+\date[27 07 2022] % (optional)
+{LaTeX Course, July 2022}
+
+\logo{\includegraphics[height=1cm]{photos/logo.png}}
+\AtBeginSection[]
+
+\begin{document}
+\frame{\titlepage}
+
+\begin{frame}
+\frametitle{Table of Contents}
+\tableofcontents
+\end{frame}
+
+\section{SVM model}
+
+\begin{frame}
+\frametitle{SVM training}
+\begin{enumerate}
+\item Picture preproccessing
+\item HOG features extraction
+\item Training SVM model
+\end{enumerate}
+\end{frame}
+\begin{frame}{Preprocessing}
+\begin{tabular}{c | c c c}
+    Original photo & Y spectrum & U spectrum & V spectrum \\ \hline
+    \includegraphics[width=0.1\textwidth, height=15mm]{photos/yuv1.jpg} & \includegraphics[width=0.1\textwidth, height=15mm]{photos/yuv2.jpg} & \includegraphics[width=0.1\textwidth, height=15mm]{photos/yuv3.jpg} & \includegraphics[width=0.1\textwidth, height=15mm]{photos/yuv4.jpg} \\
+\end{tabular} \\
+The idea here is to increase contrast on picture by switching to other color space
+\end{frame}
+
+\begin{frame}{HOG features extraction}
+    \begin{tabular}{| r c | c |}
+	\multicolumn{1}{r}{} &  \multicolumn{1}{c}{YUV} & \multicolumn{1}{c}{HOG} \\ \hline
+	Y spectrum & \includegraphics[width=0.1\textwidth,height=15mm]{photos/yuv2.jpg} & \includegraphics[width=0.1\textwidth, height=15mm]{photos/hog1.jpg} \\ \hline
+	U spectrum & \includegraphics[width=0.1\textwidth,height=15mm]{photos/yuv3.jpg} & \includegraphics[width=0.1\textwidth, height=15mm]{photos/hog2.jpg} \\ \hline
+	V spectrum & \includegraphics[width=0.1\textwidth,height=15mm]{photos/yuv4.jpg} & \includegraphics[width=0.1\textwidth, height=15mm]{photos/hog3.jpg} \\ \hline
+\end{tabular} \\
+HOG algorithms extract features depending on the contrast between pixуls or blocks of pixels.
+\end{frame}
+\begin{frame}{SVM Model training}
+    The SVM model is to be trained using HOG features which are labeled. It is supposed that after a training process the SVM model can distinguish pictures with ship from pictures without.
+\end{frame}
+
+\section {Pictures processing}
+\begin{frame}{Sliding window technique}
+Window Sliding Technique is a computational technique which aims to reduce the use of nested loop and replace it with a single loop, thereby reducing the time complexity. \\
+\includegraphics[width=0.4\textwidth, height=60mm]{photos/window.png}
+\end{frame}
+
+\begin{frame}{Heatmap}
+    New image size of the original is created with all pixels’ value equal to 0. Then the areas where a boat is detected are increased in value, whereas areas where a boat is not detected are decreased in value. \\
+    \includegraphics[width=0.4\textwidth, height=60mm]{photos/heatmap.png}
+
+\end{frame}
+\end{document}
